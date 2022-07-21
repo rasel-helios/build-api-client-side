@@ -4,13 +4,18 @@ import axios from "axios";
 const initialState = {
   userData: [],
   loading: false,
+  dataAdd: null,
   error: null,
 };
 
 export const userCreateData = createAsyncThunk(
   "userData/userPostData",
   async (userData) => {
-    const res = await axios.post("http://localhost:5000/api/user", userData);
+    const res = await axios.post("http://localhost:5000/api/user", userData, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    });
 
     return res.data;
   }
@@ -19,7 +24,11 @@ export const userCreateData = createAsyncThunk(
 export const userGetData = createAsyncThunk(
   "userData/userGetData",
   async (email) => {
-    const res = await axios.get(`http://localhost:5000/api/user/${email}`);
+    const res = await axios.get(`http://localhost:5000/api/user/${email}`, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    });
 
     return res.data;
   }
@@ -29,10 +38,18 @@ export const userUpdateData = createAsyncThunk(
   "user/userUpdateData",
   async (updateObj) => {
     const { id, name, phone } = updateObj;
-    const res = await axios.patch(`http://localhost:5000/api/user/${id}`, {
-      name: name,
-      phone: phone,
-    });
+    const res = await axios.patch(
+      `http://localhost:5000/api/user/${id}`,
+      {
+        name: name,
+        phone: phone,
+      },
+      {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      }
+    );
 
     return res.data;
   }
@@ -41,7 +58,11 @@ export const userUpdateData = createAsyncThunk(
 export const userDeleteData = createAsyncThunk(
   "user/userDeleteData",
   async (_id) => {
-    const res = await axios.delete(`http://localhost:5000/api/user/${_id}`);
+    const res = await axios.delete(`http://localhost:5000/api/user/${_id}`, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    });
 
     return res.data;
   }
@@ -60,11 +81,13 @@ const createUserData = createSlice({
     builder.addCase(userCreateData.fulfilled, (state, action) => {
       state.loading = false;
       state.userData.push(action.payload);
+      state.dataAdd = true;
       state.error = null;
     });
 
     builder.addCase(userCreateData.rejected, (state, action) => {
       state.loading = false;
+      state.dataAdd = false;
       state.error = action.error.message;
     });
 

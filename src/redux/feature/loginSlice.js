@@ -12,7 +12,7 @@ export const loginUser = createAsyncThunk(
   "login/userLogin",
   async (loginData) => {
     const res = await axios.post(`http://localhost:5000/loginUser`, loginData);
-
+    localStorage.setItem("token", res?.data?.token);
     return res.data;
   }
 );
