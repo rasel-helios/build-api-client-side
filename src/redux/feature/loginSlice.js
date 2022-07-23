@@ -11,7 +11,7 @@ const initialState = {
 export const loginUser = createAsyncThunk(
   "login/userLogin",
   async (loginData) => {
-    const res = await axios.post(`http://localhost:5000/loginUser`, loginData);
+    const res = await axios.post(`http://localhost:5000/login-user`, loginData);
     localStorage.setItem("token", res?.data?.token);
     return res.data;
   }
@@ -25,6 +25,7 @@ const loginUserSlice = createSlice({
     logOut: (state, action) => {
       state.auth = action.payload;
       state.loginData = null;
+      localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {

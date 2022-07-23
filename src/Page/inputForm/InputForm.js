@@ -8,14 +8,17 @@ import TextField from "@mui/material/TextField";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import PreLoader from "../../PreLoder/PreLoader";
 import { userCreateData } from "../../redux/feature/userDataSlice";
 
 const InputForm = () => {
-  const { loginData } = useSelector((state) => state.rootReducer.loginReducer);
-  const { dataAdd } = useSelector((state) => state.rootReducer.userReducer);
+  const { loginData } = useSelector((state) => state.persistedReducer);
+  const { dataAdd, loading } = useSelector(
+    (state) => state.rootReducer.userReducer
+  );
   const [inputs, setInputs] = useState({});
   const [userImage, setUserImage] = useState(null);
-  console.log(dataAdd);
+
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -44,15 +47,6 @@ const InputForm = () => {
     }
   };
 
-  if (dataAdd) {
-    Swal.fire({
-      icon: "success",
-      title: "New Data Add Success",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-  }
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -64,14 +58,22 @@ const InputForm = () => {
     };
 
     dispatch(userCreateData(userInputData));
-    if (!dataAdd) {
+
+    dataAdd === true &&
+      Swal.fire({
+        icon: "success",
+        title: "New Data Add Success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+    dataAdd === false &&
       Swal.fire({
         icon: "error",
         title: "New Data Add not found",
         showConfirmButton: false,
         timer: 1500,
       });
-    }
   };
 
   return (
@@ -132,14 +134,18 @@ const InputForm = () => {
                 )}
               </Grid>
               <Grid item xs={12} md={3}>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  startIcon={<AddIcon />}
-                  color="success"
-                >
-                  Add
-                </Button>
+                {loading ? (
+                  <PreLoader />
+                ) : (
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    startIcon={<AddIcon />}
+                    color="success"
+                  >
+                    Add
+                  </Button>
+                )}
               </Grid>
             </Grid>
           </form>
